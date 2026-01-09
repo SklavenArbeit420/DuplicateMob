@@ -12,9 +12,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public class EntityDamageMixin {
-    @Inject(method = "hurtServer", at = @At("HEAD"))
+    @Inject(method = "hurtServer", at = @At("TAIL"))
     private void onDamage(ServerLevel serverLevel, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity)(Object)this;
+
+        if (!cir.getReturnValue()) {
+            return;
+        }
+
+        if (!(source.getEntity() instanceof Player)) {
+            return;
+        }
 
         if (self instanceof Player) {
             return;
@@ -28,5 +36,3 @@ public class EntityDamageMixin {
         }
     }
 }
-
-
